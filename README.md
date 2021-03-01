@@ -19,6 +19,7 @@ Puoi generare l'immagine di esempio con `python andamento_classifica.py Calendar
 ## Parametri opzionali
 * `-q`: salva l'immagine creata senza mostrarla
 * `-f1`: genera anche l'immagine dell'andamento della classifica simulando una competizione a Formula 1 anziché a calendario
+* `-asta ASTA`: specifica la prima giornata successiva all'asta di riparazione
 
 ## Problemi noti
 * Testato solo su competizione a 8 squadre. Dovrebbe funzionare comunque con un numero di squadre inferiore a 8, ma potrebbe non funzionare con un numero superiore

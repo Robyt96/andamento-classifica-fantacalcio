@@ -6,14 +6,24 @@ import matplotlib.pyplot as plt
 from Giornata import Giornata
 from Calendario import Calendario
 
-# gestisce parametri da linea do comando
+# gestisce parametri da linea di comando
+def check_positive(value):
+    ivalue = int(value)
+    if ivalue <= 0 or ivalue > 38:
+        raise argparse.ArgumentTypeError("%s non è una giornata valida" % value)
+    return ivalue
+
 parser = argparse.ArgumentParser(
     description='Genera immagini dell\'andamento della classifica del fantacalcio')
 parser.add_argument('file', help='Il nome del file excel del calendario della competizione')
 parser.add_argument('-q', help='Non mostrare immagine', action='store_true')
 parser.add_argument('-f1', help='Genera anche immagine classifica Formula 1', action='store_true')
+parser.add_argument(
+    '-asta',
+    help='Specifica la prima giornata successiva all\'asta di riparazione',
+    type=check_positive)
 args = parser.parse_args()
-
+print(args.asta)
 # importa file excel come dataframe
 df = pd.read_excel(args.file,
                    header=None,
@@ -70,6 +80,9 @@ plt.title(title)
 plt.xlabel('Giornate')
 plt.ylabel('Punti in classifica')
 plt.xticks(xs)
+if (args.asta):
+    plt.vlines(args.asta - 1, 0, max_point, linestyles='dashed')
+    plt.annotate('Asta', (args.asta - 1.1, max_point-1), ha='right')
 if (not args.q): plt.show()
 fig.savefig('Giornata' + str(days-1) + '.png') # salva immagine
 
@@ -92,5 +105,8 @@ if (args.f1):
     plt.xlabel('Giornate')
     plt.ylabel('Punti in classifica')
     plt.xticks(xs)
+    if (args.asta):
+        plt.vlines(args.asta - 1, 0, max_point, linestyles='dashed')
+        plt.annotate('Asta', (args.asta - 1.1, max_point-1), ha='right')
     if (not args.q): plt.show()
     fig.savefig('Giornata' + str(days-1) + '_Formula1.png') # salva immagine
