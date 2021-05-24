@@ -22,8 +22,11 @@ parser.add_argument(
     '-asta',
     help='Specifica la prima giornata successiva all\'asta di riparazione',
     type=check_positive)
+parser.add_argument(
+    '-until',
+    help='Specifica fino a che giornata plottare la classifica',
+    type=check_positive)
 args = parser.parse_args()
-print(args.asta)
 # importa file excel come dataframe
 df = pd.read_excel(args.file,
                    header=None,
@@ -63,17 +66,18 @@ try:
     title = title[:-5]
 except:
     title = ''
-fig = plt.gcf()
 
 legend = []
 max_point = 0
 days = len(team_points[list(team_points.keys())[0]])
+plot_days = args.until if args.until else days
+fig = plt.figure(figsize=(6 + 0.2*plot_days , 4 + 0.1*plot_days))
 for idx, team in enumerate(team_points):
     if max(team_points[team]) > max_point:
         max_point = max(team_points[team])
-    xs = list(range(days))
-    plt.plot(xs, team_points[team], color=colors[idx], marker=markers[idx])
-    plt.text(days-0.95, team_points[team][days-1], str(team_points[team][days-1]))
+    xs = list(range(plot_days))
+    plt.plot(xs, team_points[team][:plot_days], color=colors[idx], marker=markers[idx])
+    plt.text(plot_days-0.95, team_points[team][plot_days-1], str(team_points[team][plot_days-1]))
     legend += [team]
 plt.legend(legend, loc='upper left')
 plt.title(title)
@@ -84,7 +88,7 @@ if (args.asta):
     plt.vlines(args.asta - 1, 0, max_point, linestyles='dashed')
     plt.annotate('Asta', (args.asta - 1.1, max_point-1), ha='right')
 if (not args.q): plt.show()
-fig.savefig('Giornata' + str(days-1) + '.png') # salva immagine
+fig.savefig('Giornata' + str(plot_days-1) + '.png') # salva immagine
 
 # genera immagine classifica formula 1
 if (args.f1):
@@ -93,12 +97,14 @@ if (args.f1):
     legend = []
     max_point = 0
     days = len(team_f1points[list(team_f1points.keys())[0]])
+    plot_days = args.until if args.until else days
+    fig = plt.figure(figsize=(6 + 0.2*plot_days , 4 + 0.1*plot_days))
     for idx, team in enumerate(team_f1points):
         if max(team_f1points[team]) > max_point:
             max_point = max(team_f1points[team])
-        xs = list(range(days))
+        xs = list(range(plot_days))
         plt.plot(xs, team_f1points[team], color=colors[idx], marker=markers[idx])
-        plt.text(days-0.95, team_f1points[team][days-1], str(team_f1points[team][days-1]))
+        plt.text(plot_days-0.95, team_f1points[team][plot_days-1], str(team_f1points[team][plot_days-1]))
         legend += [team]
     plt.legend(legend, loc='upper left')
     plt.title(f'{title} Formula 1')
@@ -109,4 +115,4 @@ if (args.f1):
         plt.vlines(args.asta - 1, 0, max_point, linestyles='dashed')
         plt.annotate('Asta', (args.asta - 1.1, max_point-1), ha='right')
     if (not args.q): plt.show()
-    fig.savefig('Giornata' + str(days-1) + '_Formula1.png') # salva immagine
+    fig.savefig('Giornata' + str(plot_days-1) + '_Formula1.png') # salva immagine
